@@ -4,7 +4,7 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 dotenv.config();
 
 const app = express();
@@ -27,8 +27,14 @@ async function run() {
     const db = client.db('wanderlast');
     const destination = db.collection('destination');
 
-    app.get('/destination', async(req, res) => {
+    app.get('/destinations', async(req, res) => {
       const result = await destination.find().toArray();
+      res.send(result);
+    })
+
+    app.get('/destinations/:id', async (req, res) => {
+      const { id } = req.params;
+      const result = await destination.findOne({ _id: new ObjectId(id) });
       res.send(result);
     })
 
