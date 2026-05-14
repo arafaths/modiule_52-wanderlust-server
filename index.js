@@ -3,16 +3,15 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const express = require('express');
 const dotenv = require('dotenv');
+const cors = require('cors');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 dotenv.config();
 
 const app = express();
+app.use(cors());
+app.use(express.json());
 const PORT = process.env.PORT;
 const uri = process.env.MONGODB_URI;
-
-app.get('/', (req, res) => {
-  res.send('server is rinnig');
-});
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -24,8 +23,25 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    
+    const db = client.db('wanderlast');
+    const destination = db.collection('destination');
+
+    app.get('/destination', async(req, res) => {
+      const result = await destination.find().toArray();
+      res.send(result);
+    })
+
+    app.post('/destination', async(req, res) => {
+      const destinationData = req.body;
+      const result = await destination.insertOne(destinationData);
+      res.send(result)
+      console.log(destinationData)
+    })
+
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 });
     console.log(
@@ -33,10 +49,16 @@ async function run() {
     );
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
+
+
+app.get('/', (req, res) => {
+  res.send('server is rinnig');
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server is rinnig on ${PORT}`);
