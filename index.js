@@ -38,6 +38,13 @@ async function run() {
       res.send(result);
     })
 
+    app.patch('/destinations/:id', async (req, res) => {
+      const { id } = req.params;
+      const form = req.body;
+      const result = await destination.updateOne({ _id: new ObjectId(id) }, { $set: form });
+      res.send(result)
+    })
+
     app.post('/destination', async(req, res) => {
       const destinationData = req.body;
       const result = await destination.insertOne(destinationData);
