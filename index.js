@@ -26,6 +26,7 @@ async function run() {
     
     const db = client.db('wanderlast');
     const destination = db.collection('destination');
+    const bookingCollection = db.collection('bookings');
 
     app.get('/destinations', async(req, res) => {
       const result = await destination.find().toArray();
@@ -55,7 +56,12 @@ async function run() {
       const destinationData = req.body;
       const result = await destination.insertOne(destinationData);
       res.send(result)
-      console.log(destinationData)
+    })
+
+    app.post('/bookings', async (req, res) => {
+      const bookingData = req.body;
+      const result = await bookingCollection.insertOne(bookingData);
+      res.send(result)
     })
 
     // Connect the client to the server	(optional starting in v4.7)
