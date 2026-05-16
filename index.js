@@ -64,6 +64,18 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/bookings/:userId', async (req, res) => {
+      const { userId } = req.params;
+      const result = await bookingCollection.find({ userId }).toArray();
+      res.send(result)
+    });
+
+    app.delete('/bookings/:userId', async (req, res) => {
+      const { userId } = req.params;
+      const result = await bookingCollection.deleteOne({ _id: new ObjectId(userId) });
+      res.send(result);
+    });
+
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
